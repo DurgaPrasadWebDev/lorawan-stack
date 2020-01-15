@@ -3410,6 +3410,15 @@
       "file": "io.go"
     }
   },
+  "error:pkg/gatewayserver/io:frequency_plan_not_configured": {
+    "translations": {
+      "en": "frequency plan `{name}` is not configured for this gateway"
+    },
+    "description": {
+      "package": "pkg/gatewayserver/io",
+      "file": "io.go"
+    }
+  },
   "error:pkg/gatewayserver/io:no_absolute_time": {
     "translations": {
       "en": "no absolute time provided for class B downlink"
@@ -3422,15 +3431,6 @@
   "error:pkg/gatewayserver/io:no_rx_delay": {
     "translations": {
       "en": "no Rx delay provided for class A downlink"
-    },
-    "description": {
-      "package": "pkg/gatewayserver/io",
-      "file": "io.go"
-    }
-  },
-  "error:pkg/gatewayserver/io:frequency_plan_not_configured": {
-    "translations": {
-      "en": "frequency plan `{name}` is not configured for this gateway"
     },
     "description": {
       "package": "pkg/gatewayserver/io",
@@ -3521,6 +3521,24 @@
   "error:pkg/gatewayserver/scheduling:dwell_time": {
     "translations": {
       "en": "packet exceeds dwell time restriction"
+    },
+    "description": {
+      "package": "pkg/gatewayserver/scheduling",
+      "file": "scheduler.go"
+    }
+  },
+  "error:pkg/gatewayserver/scheduling:frequency_plans_overlap_sub_band": {
+    "translations": {
+      "en": "frequency plans must not have overlapping sub bands"
+    },
+    "description": {
+      "package": "pkg/gatewayserver/scheduling",
+      "file": "scheduler.go"
+    }
+  },
+  "error:pkg/gatewayserver/scheduling:frequency_plans_timeoffair": {
+    "translations": {
+      "en": "frequency plans must have the same time off air value"
     },
     "description": {
       "package": "pkg/gatewayserver/scheduling",
