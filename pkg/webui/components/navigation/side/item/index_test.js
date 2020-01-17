@@ -15,6 +15,7 @@
 import React from 'react'
 
 import getSideNavigationItemDriver from './index_driver'
+import Context from '../context'
 import { SideNavigationItem } from '.'
 
 describe('SideNavigationItem', function() {
@@ -33,9 +34,7 @@ describe('SideNavigationItem', function() {
         title: 'test-title',
         path: '/test-title',
         depth: 0,
-        isMinimized: false,
         isActive: false,
-        items: [],
       })
     })
 
@@ -49,7 +48,6 @@ describe('SideNavigationItem', function() {
       driver.when.created({
         title: 'test-title',
         depth: 0,
-        isMinimized: false,
         isActive: false,
         children: (
           <React.Fragment>
