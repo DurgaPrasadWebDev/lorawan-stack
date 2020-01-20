@@ -88,7 +88,14 @@ func (s *Subscription) Protocol() string { return s.protocol }
 // ApplicationIDs returns the application identifiers, if the subscription represents any specific.
 func (s *Subscription) ApplicationIDs() *ttnpb.ApplicationIdentifiers { return s.ids }
 
-var errBufferFull = errors.DefineResourceExhausted("buffer_full", "buffer is full")
+var (
+	// ErrLinkDeleted occurs when the underlying link of a subscription has been deleted.
+	ErrLinkDeleted = errors.DefineAborted("link_deleted", "link deleted")
+	// ErrLinkReset occurs when the underlying link of a subscription has been reset.
+	ErrLinkReset = errors.DefineUnavailable("link_reset", "link reset")
+	// ErrBufferFull occurs when the subscription buffer is full.
+	ErrBufferFull = errors.DefineResourceExhausted("buffer_full", "buffer is full")
+)
 
 // SendUp sends an upstream message.
 // This method returns immediately, returning nil if the message is buffered, or with an error when the buffer is full.
@@ -101,7 +108,7 @@ func (s *Subscription) SendUp(ctx context.Context, up *ttnpb.ApplicationUp) erro
 		ApplicationUp: up,
 	}:
 	default:
-		return errBufferFull
+		return ErrBufferFull
 	}
 	return nil
 }

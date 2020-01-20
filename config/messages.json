@@ -1898,6 +1898,24 @@
       "file": "io.go"
     }
   },
+  "error:pkg/applicationserver/io:link_deleted": {
+    "translations": {
+      "en": "link deleted"
+    },
+    "description": {
+      "package": "pkg/applicationserver/io",
+      "file": "io.go"
+    }
+  },
+  "error:pkg/applicationserver/io:link_reset": {
+    "translations": {
+      "en": "link reset"
+    },
+    "description": {
+      "package": "pkg/applicationserver/io",
+      "file": "io.go"
+    }
+  },
   "error:pkg/applicationserver/redis:application_uid": {
     "translations": {
       "en": "invalid application UID `{application_uid}`"

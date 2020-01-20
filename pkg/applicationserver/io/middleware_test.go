@@ -16,7 +16,6 @@ package io_test
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
@@ -43,9 +42,8 @@ var (
 			},
 		},
 	}
-	timeout     = (1 << 6) * test.Delay
-	backoff     = []time.Duration{(1 << 4) * test.Delay}
-	errConnLost = errors.New("connection lost")
+	timeout = (1 << 6) * test.Delay
+	backoff = []time.Duration{(1 << 4) * test.Delay}
 )
 
 func TestRetryServer(t *testing.T) {
@@ -77,10 +75,10 @@ func TestRetryServer(t *testing.T) {
 	a.So(downstreamUp.ApplicationUp, should.Resemble, registeredApplicationUp)
 
 	// Cancel upstream subscription gracefully.
-	upstreamSub.Disconnect(nil)
+	upstreamSub.Disconnect(io.ErrLinkReset)
 	select {
 	case <-downstreamSub.Context().Done():
-		t.Fatal("Downstream context has been cancelled")
+		t.Fatal("Downstream context has been canceled")
 	case <-time.After(timeout):
 	}
 
@@ -101,8 +99,8 @@ func TestRetryServer(t *testing.T) {
 	a.So(downstreamUp.ApplicationUp, should.Resemble, registeredApplicationUp)
 
 	// Shutdown the link completely.
-	server.SetSubscribeError(errConnLost)
-	upstreamSub.Disconnect(nil)
+	server.SetSubscribeError(io.ErrLinkDeleted)
+	upstreamSub.Disconnect(io.ErrLinkDeleted)
 
 	// Check that the downstream connection failed.
 	select {
@@ -111,7 +109,7 @@ func TestRetryServer(t *testing.T) {
 	case <-downstreamSub.Context().Done():
 	}
 	err = downstreamSub.Context().Err()
-	a.So(err, should.Equal, errConnLost)
+	a.So(err, should.Resemble, io.ErrLinkDeleted)
 }
 
 func newContextWithRightsFetcher(ctx context.Context) context.Context {

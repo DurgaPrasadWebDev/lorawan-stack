@@ -18,6 +18,7 @@ import (
 	"context"
 
 	"github.com/gogo/protobuf/types"
+	"go.thethings.network/lorawan-stack/pkg/applicationserver/io"
 	"go.thethings.network/lorawan-stack/pkg/auth/rights"
 	"go.thethings.network/lorawan-stack/pkg/errors"
 	"go.thethings.network/lorawan-stack/pkg/log"
@@ -46,7 +47,7 @@ func (as *ApplicationServer) SetLink(ctx context.Context, req *ttnpb.SetApplicat
 	if err != nil {
 		return nil, err
 	}
-	if err := as.cancelLink(ctx, req.ApplicationIdentifiers); err != nil && !errors.IsNotFound(err) {
+	if err := as.cancelLink(ctx, req.ApplicationIdentifiers, io.ErrLinkReset); err != nil && !errors.IsNotFound(err) {
 		log.FromContext(ctx).WithError(err).Warn("Failed to cancel link")
 	}
 	as.startLinkTask(as.Context(), req.ApplicationIdentifiers)
@@ -63,7 +64,7 @@ func (as *ApplicationServer) DeleteLink(ctx context.Context, ids *ttnpb.Applicat
 	if err := rights.RequireApplication(ctx, *ids, ttnpb.RIGHT_APPLICATION_LINK); err != nil {
 		return nil, err
 	}
-	if err := as.cancelLink(ctx, *ids); err != nil && !errors.IsNotFound(err) {
+	if err := as.cancelLink(ctx, *ids, io.ErrLinkDeleted); err != nil && !errors.IsNotFound(err) {
 		log.FromContext(ctx).WithError(err).Warn("Failed to cancel link")
 	}
 	_, err := as.linkRegistry.Set(ctx, *ids, nil, func(link *ttnpb.ApplicationLink) (*ttnpb.ApplicationLink, []string, error) { return nil, nil, nil })
