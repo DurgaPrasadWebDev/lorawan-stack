@@ -6,6 +6,8 @@ weight: 3
 
 The process through which a webhook template becomes a webhook integration is called instantiation. Instantiation is done by the Console after the user has filled in the values of the the template fields. This page describes how the template and the values are combined into the final webhook instance.
 
+<!--more-->
+
 ## Instantiation of Header Values
 
 The fields are directly replaced in the values of the headers using the syntax `{field-id}`. Consider the following fragment of a webhook template, describing the available template fields and the headers to be sent to the endpoint:
@@ -21,7 +23,7 @@ headers:
 - Authorization: Bearer {token}
 ```
 
-The user has filled in the value of `token` with `Zpdc7jWMvYzVTeNQ`. The resulting webhook will contain a header named `Authorization` with the value `Bearer Zpdc7jWMvYzVTeNQ`.
+If the user has filled in the value of `token` with `Zpdc7jWMvYzVTeNQ`, then the resulting webhook will contain a header named `Authorization` with the value `Bearer Zpdc7jWMvYzVTeNQ`.
 
 ## Instantiation of URLs and Paths
 
@@ -40,7 +42,8 @@ fields:
   secret: false
   default-value: "true"
 baseurl: https://www.example.com/lora{/username}
-uplink-message-path: /uplink{?create}
+paths:
+- uplink-message: /uplink{?create}
 ```
 
-The user has filled in the value of `username` with `user1` and the value of `create` with `true`. The resulting webhook will have its base URL set to `https://www.example.com/lora/user1` and the uplink messages will be sent to `https://www.example.com/lora/user1?create=true` (the uplink messages path will be set to `/uplink?create=true`).
+If the user has filled in the value of `username` with `user1` and the value of `create` with `true`, then the resulting webhook will have its base URL set to `https://www.example.com/lora/user1` and the uplink messages will be sent to `https://www.example.com/lora/user1?create=true` (the uplink messages path will be set to `/uplink?create=true`).
