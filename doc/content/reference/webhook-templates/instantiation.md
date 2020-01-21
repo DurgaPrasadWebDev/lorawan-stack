@@ -16,7 +16,7 @@ fields:
   name: Authentication token
   description: The token used for authentication
   secret: true
-  defaultvalue:
+  default-value:
 headers:
 - Authorization: Bearer {token}
 ```
@@ -33,15 +33,14 @@ fields:
   name: Username
   description: The username used on the service
   secret: false
-  defaultvalue:
+  default-value:
 - id: create
   name: Create device
   description: If set to true, the device will automatically be created on the first uplink
   secret: false
-  defaultvalue: "true"
+  default-value: "true"
 baseurl: https://www.example.com/lora{/username}
-uplinkmessage:
-  path: /uplink{?create}
+uplink-message-path: /uplink{?create}
 ```
 
 The user has filled in the value of `username` with `user1` and the value of `create` with `true`. The resulting webhook will have its base URL set to `https://www.example.com/lora/user1` and the uplink messages will be sent to `https://www.example.com/lora/user1?create=true` (the uplink messages path will be set to `/uplink?create=true`).
