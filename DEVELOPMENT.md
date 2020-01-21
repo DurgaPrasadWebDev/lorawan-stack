@@ -529,3 +529,70 @@ $ git push origin master
 ```
 
 After pushing the tag, our CI system will start building the release. When this is done, you'll find a new release on the [releases page](https://github.com/TheThingsNetwork/lorawan-stack/releases). After this is done, you'll need to edit the release notes. We typically copy-paste these from `CHANGELOG.md`.
+
+
+### Console Troubleshooting
+
+#### Problem: Assets are not found
+The console will render a blank page and you can see backend logs like e.g.:
+```
+INFO Request handled                          duration=40.596µs error=error:pkg/errors/web:unknown (Not Found) message=Not Found method=GET namespace=web remote_addr=[::1]:50450 request_id=01DZ2CJDWKAFS10QD1NKZ1D56H status=404 url=/assets/console.36fcac90fa2408a19e4b.js
+```
+#### Possible causes
+##### Missing restart
+The stack has not been restarted after the console bundle has changed. In production mode, the stack will access the bundle via a filename that contains a content-hash, which is set during the build process of the console. The hash cannot be updated durig runtime and will take effect only after a restart.
+
+##### Possible solution
+  1. Restart the stack
+
+##### Accidentally deleted bundle files
+The bundle files have been deleted. This might happen e.g. when a mage target encountered an error and quit before running through.
+
+##### Possible solution
+  1. Rebuild the console `mage js:clean js:build`
+  2. Restart the stack
+
+##### Mixing up production and development builds
+If you switch between production and development builds of the console, you might forget to re-run the build process and to restart the stack. Likewise, you might have arbitrary config options set that are specific to  a respective build type.
+
+##### Possible solution
+  1. Double check whether you have set the correct environment: `echo $NODE_ENV`
+  2. Double check whether your stack config is set correctly (especially `TTN_LW_CONSOLE_UI_JS_FILE`, `TTN_LW_CONSOLE_UI_CANONICAL_URL` and similar settings) 
+  3. Make sure to rebuild the console `mage js:clean js:build`
+  4. Restart the stack
+
+#### Problem: Console rendering blank page and showing arbitrary error message in console logs, e.g.:
+```
+console.4e67a17c1ce5a74f3f50.js:104 Uncaught TypeError: m.subscribe is not a function
+    at Object../pkg/webui/console/api/index.js (console.4e67a17c1ce5a74f3f50.js:104)
+    at o (console.4e67a17c1ce5a74f3f50.js:1)
+    at Object../pkg/webui/console/store/middleware/logics/index.js (console.4e67a17c1ce5a74f3f50.js:104)
+    at o (console.4e67a17c1ce5a74f3f50.js:1)
+    at Object.<anonymous> (console.4e67a17c1ce5a74f3f50.js:104)
+    at Object../pkg/webui/console/store/index.js (console.4e67a17c1ce5a74f3f50.js:104)
+    at o (console.4e67a17c1ce5a74f3f50.js:1)
+    at Module../pkg/webui/console.js (console.4e67a17c1ce5a74f3f50.js:104)
+    at o (console.4e67a17c1ce5a74f3f50.js:1)
+    at Object.0 (console.4e67a17c1ce5a74f3f50.js:104)
+```
+#### Possible causes
+##### Bundle using old JS SDK
+The bundle integrates an old version of the JS SDK. This is likely a caching/linking issue of the JS SDK dependency
+
+##### Possible solutions
+- Re-establish a proper module link between the console and the JS SDK
+  - Run `mage js:cleanDeps js:deps`
+  - Check whether the `ttn-lw` symlink exists inside `node_modules` and whether it points to the right destination: `lorawan-stack/sdk/js/dist`
+    - If you have multiple ttn repos set up, `yarn link` might associate the JS SDK module with the SDK on another ttn repository
+  - Rebuild the console and (only after the build has finished) restart the stack
+
+#### Problem: The build crashes without showing any helpful error message
+#### Cause
+##### Not running mage in verbose mode
+`mage` runs in silent mode by default. In verbose mode, you might get more helpful error messages
+
+##### Solution
+Run mage in verbose mode: `mage -v {target}`
+
+#### General advice
+A lot of problems during build stem from fragmented, incomplete runs of mage targets (due to arbitrary errors happening during a run). Oftentimes it then helps to build the entire webui from scratch: `mage jsSDK:cleanDeps jsSDK:clean js:cleanDeps js:clean js:build`, and (re-)start the stack after running this.
